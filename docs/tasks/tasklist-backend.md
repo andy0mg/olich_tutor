@@ -4,7 +4,7 @@
 
 **Backend** — ядро системы: доменная логика, сессии и прогресс, вызовы LLM, доступ к данным. Через REST API к нему подключаются **все клиенты** (сейчас Telegram-бот, затем веб) и концентрируются **интеграции** с внешними системами (OpenRouter и др. по [integrations.md](../integrations.md)). Продуктовый контекст — [idea.md](../idea.md).
 
-Этот tasklist ведёт **итерации 2, 3 и 5** дорожной карты ([plan.md](../plan.md)) в виде последовательных волн внутри области backend. **Текущий фокус — итерация 2:** контракты и реализация API под два базовых сценария MVP (**вопрос к репетитору** и **фиксация выполненного домашнего задания**), состояние в памяти, затем рефакторинг бота на клиент API.
+Этот tasklist ведёт **итерации 2, 3 и 5** дорожной карты ([plan.md](../plan.md)) в виде последовательных волн внутри области backend. **Итерация 2 (backend MVP)** по задачам 01–08 закрыта: контракты и API под сценарии **вопрос к репетитору** и **фиксация выполненного ДЗ**, состояние в памяти, рефакторинг бота на HTTP-клиент. **Текущий фокус области — итерация 3:** персистентность и модель данных (раздел [«Итерация 3»](#итерация-3-персистентность-следующая-волна) ниже).
 
 Детальные `plan.md` / `summary.md` по задачам — в `docs/tasks/impl/backend/<итерация>/tasks/task-NN-<slug>/` ([workflow.md](../templates/workflow.md)). Структура списка согласована с шаблоном [tasklist.md](../templates/tasklist.md) (в репозитории нет отдельного `tasklist-template.md`).
 
@@ -33,12 +33,12 @@
 
 ---
 
-## Итерация 2 (текущая волна): сводная таблица задач
+## Итерация 2 (завершена): сводная таблица задач
 
 | № | Задача | Кратко | Статус | Документы задачи |
 |---|--------|--------|--------|------------------|
-| 01 | Стек и соглашения | Выбор backend-стека, ADR при необходимости; обновление [.cursor/rules/conventions.mdc](../../.cursor/rules/conventions.mdc); согласование с [vision.md](../vision.md). | 📋 Planned | план \| summary — по созданию папки в `impl/backend/iter-2-mvp/...` |
-| 02 | Контракты API | Два сценария: вопрос репетитору; фиксация выполненного ДЗ. OpenAPI, ошибки, версия API; опора на [data-model.md](../data-model.md) (`Conversation`, `Message`, `KnowledgeSnapshot` и др.). | 📋 Planned | план \| summary |
+| 01 | Стек и соглашения | Выбор backend-стека, ADR при необходимости; обновление [.cursor/rules/conventions.mdc](../../.cursor/rules/conventions.mdc); согласование с [vision.md](../vision.md). | ✅ Done | [план](impl/backend/iter-2-mvp/tasks/task-01-backend-stack/plan.md) \| [summary](impl/backend/iter-2-mvp/tasks/task-01-backend-stack/summary.md) |
+| 02 | Контракты API | Два сценария: вопрос репетитору; фиксация выполненного ДЗ. OpenAPI, ошибки, версия API; опора на [data-model.md](../data-model.md) (`Conversation`, `Message`, `KnowledgeSnapshot` и др.). | ✅ Done | [план](impl/backend/iter-2-mvp/tasks/task-02-api-contracts/plan.md) \| [summary](impl/backend/iter-2-mvp/tasks/task-02-api-contracts/summary.md) |
 | 03 | Каркас backend | Каталог `backend/` по vision: `api/`, сервисы, `tutor/`, `llm/`; конфиг; health/readiness; точка входа сервиса. | ✅ Done | [план](impl/backend/iter-2-mvp/tasks/task-03-backend-scaffold/plan.md) \| [summary](impl/backend/iter-2-mvp/tasks/task-03-backend-scaffold/summary.md) |
 | 04 | Базовые API-тесты | Тесты под сценарии сообщений, уже покрытые ботом (паритет, happy-path, ключевые ошибки валидации). | ✅ Done | [план](impl/backend/iter-2-mvp/tasks/task-04-api-tests/plan.md) \| [summary](impl/backend/iter-2-mvp/tasks/task-04-api-tests/summary.md) |
 | 05 | Реализация API и логики | Эндпоинты, серверная логика, LLM stateless в ядре, OpenRouter из конфига ([integrations.md](../integrations.md)); история в tutor/сессии, не в LLM-клиенте. | ✅ Done | [план](impl/backend/iter-2-mvp/tasks/task-05-api-implementation/plan.md) \| [summary](impl/backend/iter-2-mvp/tasks/task-05-api-implementation/summary.md) |
@@ -65,7 +65,7 @@
 
 ---
 
-## Задача 01: Стек и соглашения 📋
+## Задача 01: Стек и соглашения ✅
 
 ### Цель
 
@@ -73,10 +73,10 @@
 
 ### Состав работ
 
-- [ ] Выбрать и зафиксировать веб-фреймворк и базовые библиотеки (в т.ч. генерация/сервирование OpenAPI, если применимо).
-- [ ] При необходимости — запись в `docs/adr/` (отдельно от ADR по СУБД).
-- [ ] Обновить [.cursor/rules/conventions.mdc](../../.cursor/rules/conventions.mdc): слои, имена модулей backend, команды, отсылки к stateless LLM и MVP без БД.
-- [ ] Согласовать с [vision.md](../vision.md) формулировки по стеку и структуре `backend/`.
+- [x] Выбрать и зафиксировать веб-фреймворк и базовые библиотеки (в т.ч. генерация/сервирование OpenAPI, если применимо).
+- [x] При необходимости — запись в `docs/adr/` (отдельно от ADR по СУБД).
+- [x] Обновить [.cursor/rules/conventions.mdc](../../.cursor/rules/conventions.mdc): слои, имена модулей backend, команды, отсылки к stateless LLM и MVP без БД.
+- [x] Согласовать с [vision.md](../vision.md) формулировки по стеку и структуре `backend/`.
 
 ### Артефакты
 
@@ -104,11 +104,11 @@
 
 ### Документы задачи
 
-- 📋 План и 📝 Summary — `docs/tasks/impl/backend/iter-2-mvp/tasks/task-01-backend-stack/` (после создания)
+- [план](impl/backend/iter-2-mvp/tasks/task-01-backend-stack/plan.md) \| [summary](impl/backend/iter-2-mvp/tasks/task-01-backend-stack/summary.md)
 
 ---
 
-## Задача 02: Контракты API (два базовых сценария) 📋
+## Задача 02: Контракты API (два базовых сценария) ✅
 
 ### Цель
 
@@ -116,9 +116,9 @@
 
 ### Состав работ
 
-- [ ] Описать ресурсы и потоки запросов для (A) и (B); сопоставить с `Conversation`, `Message`, `KnowledgeSnapshot` и связями из data-model.
-- [ ] Поддержать актуальный **OpenAPI** (или эквивалент) в репозитории.
-- [ ] Зафиксировать коды ошибок и структуру тел ошибок; политика версии API.
+- [x] Описать ресурсы и потоки запросов для (A) и (B); сопоставить с `Conversation`, `Message`, `KnowledgeSnapshot` и связями из data-model.
+- [x] Поддержать актуальный **OpenAPI** (или эквивалент) в репозитории.
+- [x] Зафиксировать коды ошибок и структуру тел ошибок; политика версии API.
 
 ### Артефакты
 
@@ -145,11 +145,11 @@
 
 ### Документы задачи
 
-- 📋 План и 📝 Summary — `docs/tasks/impl/backend/iter-2-mvp/tasks/task-02-api-contracts/`
+- [план](impl/backend/iter-2-mvp/tasks/task-02-api-contracts/plan.md) \| [summary](impl/backend/iter-2-mvp/tasks/task-02-api-contracts/summary.md)
 
 ---
 
-## Задача 03: Каркас backend-сервиса 📋
+## Задача 03: Каркас backend-сервиса ✅
 
 ### Цель
 
@@ -157,9 +157,9 @@
 
 ### Состав работ
 
-- [ ] Создать модули: API-роутеры, сервисы, `tutor/`, `llm/`; точка входа процесса API (отдельно от `main.py` бота при необходимости).
-- [ ] Подключить `pydantic-settings` / аналог; расширить [.env.example](../../.env.example) под backend.
-- [ ] Заложить порты и базовый URL для последующего клиента бота.
+- [x] Создать модули: API-роутеры, сервисы, `tutor/`, `llm/`; точка входа процесса API (отдельно от `main.py` бота при необходимости).
+- [x] Подключить `pydantic-settings` / аналог; расширить [.env.example](../../.env.example) под backend.
+- [x] Заложить порты и базовый URL для последующего клиента бота.
 
 ### Артефакты
 
@@ -185,7 +185,7 @@
 
 ### Документы задачи
 
-- 📋 План и 📝 Summary — `docs/tasks/impl/backend/iter-2-mvp/tasks/task-03-backend-scaffold/`
+- [план](impl/backend/iter-2-mvp/tasks/task-03-backend-scaffold/plan.md) \| [summary](impl/backend/iter-2-mvp/tasks/task-03-backend-scaffold/summary.md)
 
 ---
 
@@ -224,7 +224,7 @@
 
 ### Документы задачи
 
-- 📋 План и 📝 Summary — `docs/tasks/impl/backend/iter-2-mvp/tasks/task-04-api-tests/`
+- [план](impl/backend/iter-2-mvp/tasks/task-04-api-tests/plan.md) \| [summary](impl/backend/iter-2-mvp/tasks/task-04-api-tests/summary.md)
 
 ---
 
@@ -268,7 +268,7 @@
 
 ---
 
-## Задача 06: Документирование backend 📋
+## Задача 06: Документирование backend ✅
 
 ### Цель
 
@@ -276,9 +276,9 @@
 
 ### Состав работ
 
-- [ ] Описать в [README.md](../../README.md) и при необходимости в vision: запуск backend, порт, получение OpenAPI (URL или файл).
-- [ ] Обновить [.env.example](../../.env.example) полным списком переменных для backend и бота.
-- [ ] Привести в соответствие [docs/vision.md](../vision.md), [docs/data-model.md](../data-model.md), [docs/integrations.md](../integrations.md), [docs/plan.md](../plan.md) — что уже сделано по ит.2 (без переписывания дорожной карты целиком).
+- [x] Описать в [README.md](../../README.md) и при необходимости в vision: запуск backend, порт, получение OpenAPI (URL или файл).
+- [x] Обновить [.env.example](../../.env.example) полным списком переменных для backend и бота.
+- [x] Привести в соответствие [docs/vision.md](../vision.md), [docs/data-model.md](../data-model.md), [docs/integrations.md](../integrations.md), [docs/plan.md](../plan.md) — что уже сделано по ит.2 (без переписывания дорожной карты целиком).
 
 ### Артефакты
 
@@ -304,7 +304,7 @@
 
 ### Документы задачи
 
-- 📋 План и 📝 Summary — `docs/tasks/impl/backend/iter-2-mvp/tasks/task-06-backend-docs/`
+- [план](impl/backend/iter-2-mvp/tasks/task-06-backend-docs/plan.md) \| [summary](impl/backend/iter-2-mvp/tasks/task-06-backend-docs/summary.md)
 
 ---
 
