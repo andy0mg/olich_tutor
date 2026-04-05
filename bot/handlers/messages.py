@@ -6,6 +6,7 @@ from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
+from bot.telegram_math import plain_math_for_telegram
 from llm.client import LLMClient
 from tutor.session import get_or_create_session, start_session
 
@@ -34,7 +35,8 @@ def create_messages_router(llm: LLMClient) -> Router:
         session = get_or_create_session(user_id)
         session.history.append({"role": "user", "content": message.text})
         try:
-            reply = await llm.chat(session.history)
+            raw_reply = await llm.chat(session.history)
+            reply = plain_math_for_telegram(raw_reply)
         except Exception:
             logger.exception("Reply failed for user_id=%s", user_id)
             session.history.pop()
