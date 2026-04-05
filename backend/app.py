@@ -9,11 +9,13 @@
 from __future__ import annotations
 
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
 from backend.api.router import api_router
 from backend.config import settings
+from backend.db.session import dispose_engine, init_engine
 from backend.middleware import AccessLogMiddleware
 
 
@@ -28,13 +30,25 @@ def configure_logging(level: str) -> None:
     )
 
 
-def create_app() -> FastAPI:
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    init_engine()
+    yield
+    await dispose_engine()
+
+
+def create_app(*, with_db_lifespan: bool = True) -> FastAPI:
+    """with_db_lifespan=False — для тестов: engine создаётся вне приложения (conftest)."""
     configure_logging(settings.log_level)
-    application = FastAPI(
+    common = dict(
         title="olich_tutor backend",
         version="0.1.0",
         description="Ядро системы; публичный контракт — backend/openapi.yaml.",
     )
+    if with_db_lifespan:
+        application = FastAPI(**common, lifespan=lifespan)
+    else:
+        application = FastAPI(**common)
     application.add_middleware(AccessLogMiddleware)
     application.include_router(api_router)
     return application

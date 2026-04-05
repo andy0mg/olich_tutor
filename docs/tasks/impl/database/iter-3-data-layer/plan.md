@@ -20,8 +20,8 @@
 | 01 | Сценарии пользователя и требования к данным | ✅ Done | [tasks/task-01-user-scenarios/](tasks/task-01-user-scenarios/) |
 | 02 | Проектирование схемы данных | ✅ Done | [tasks/task-02-schema-design/](tasks/task-02-schema-design/) |
 | 03 | Выбор инструментов миграций и доступа к БД | ✅ Done | [tasks/task-03-tooling-adr/](tasks/task-03-tooling-adr/) |
-| 04 | Инфраструктура БД | 📋 Planned | [tasks/task-04-db-infra/](tasks/task-04-db-infra/) |
-| 05 | ORM-модели, репозитории и интеграция в backend | 📋 Planned | [tasks/task-05-orm-integration/](tasks/task-05-orm-integration/) |
+| 04 | Инфраструктура БД | ✅ Done | [tasks/task-04-db-infra/](tasks/task-04-db-infra/) |
+| 05 | ORM-модели, репозитории и интеграция в backend | ✅ Done | [tasks/task-05-orm-integration/](tasks/task-05-orm-integration/) |
 
 ## Опорные документы
 

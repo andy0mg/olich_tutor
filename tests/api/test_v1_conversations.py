@@ -8,7 +8,6 @@ from httpx import ASGITransport, AsyncClient
 
 from backend.app import create_app
 from backend.llm.deps import get_llm_client
-from backend.services.memory_store import InMemoryApiStore, get_memory_store
 from tests.conftest import TELEGRAM_HEADERS
 
 
@@ -145,9 +144,7 @@ class _BrokenLLM:
 
 async def test_post_message_llm_error_returns_internal_error() -> None:
     """Сбой вызова LLM — 500 и тело OpenAPI internal_error."""
-    app = create_app()
-    store = InMemoryApiStore()
-    app.dependency_overrides[get_memory_store] = lambda: store
+    app = create_app(with_db_lifespan=False)
     app.dependency_overrides[get_llm_client] = lambda: _BrokenLLM()
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:

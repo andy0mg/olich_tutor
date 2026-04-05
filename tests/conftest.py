@@ -1,23 +1,46 @@
 """Общие фикстуры API-тестов.
 
-Изоляция: каждый тест получает новое приложение и пустой InMemoryApiStore
-(dependency_overrides), без общего глобального состояния между тестами.
-
-Политика: интеграционные сценарии через httpx + ASGI; LLM подменяется через
-`dependency_overrides` (`get_llm_client`); новые эндпоинты — happy-path и ключевые 4xx.
+PostgreSQL: перед прогоном — `make db-up && make db-migrate`.
+Движок создаётся в session-фикстуре; таблицы очищаются перед каждым тестом.
+Приложение для ASGI без lifespan БД, чтобы не вызывать dispose при закрытии клиента.
 """
+
+from __future__ import annotations
 
 from collections.abc import AsyncIterator
 
 import pytest
+import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import text
 
 from backend.app import create_app
+from backend.db.session import dispose_engine, get_engine, init_engine
 from backend.llm.deps import get_llm_client
-from backend.services.memory_store import InMemoryApiStore, get_memory_store
 from bot.backend_client import BackendApiClient
 
 TELEGRAM_HEADERS = {"X-Channel": "telegram", "X-External-User-Id": "4242"}
+
+_TRUN = text(
+    "TRUNCATE messages, knowledge_snapshots, conversations, enrollments, "
+    "guardian_student_links, students, user_channel_identities, users, "
+    "learning_streams RESTART IDENTITY CASCADE"
+)
+
+
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def _engine_lifecycle() -> AsyncIterator[None]:
+    init_engine()
+    yield
+    await dispose_engine()
+
+
+@pytest.fixture(autouse=True)
+async def _clean_tables() -> AsyncIterator[None]:
+    engine = get_engine()
+    async with engine.begin() as conn:
+        await conn.execute(_TRUN)
+    yield
 
 
 class FakeLLMClient:
@@ -34,11 +57,9 @@ class FakeLLMClient:
 
 @pytest.fixture
 async def client() -> AsyncIterator[AsyncClient]:
-    """HTTP-клиент к ASGI-приложению с чистым in-memory store."""
-    app = create_app()
-    store = InMemoryApiStore()
+    """HTTP-клиент к ASGI с реальной БД и подменой LLM."""
+    app = create_app(with_db_lifespan=False)
     fake_llm = FakeLLMClient()
-    app.dependency_overrides[get_memory_store] = lambda: store
     app.dependency_overrides[get_llm_client] = lambda: fake_llm
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:

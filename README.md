@@ -73,7 +73,7 @@ flowchart TB
 
 ### Backend API
 
-Отдельный процесс HTTP API (ядро; Telegram-бот ходит сюда по HTTP).
+Отдельный процесс HTTP API (ядро; Telegram-бот ходит сюда по HTTP). Данные `/api/v1` (диалоги, снимки знаний) хранятся в **PostgreSQL**; перед запуском: **`make db-up && make db-migrate`** (см. раздел PostgreSQL выше).
 
 - **Запуск:** `make run-backend` (эквивалент `python -m backend` — Uvicorn, хост и порт из `BACKEND_HOST` / `BACKEND_PORT` в `.env`).
 - **Базовый URL:** `http://<BACKEND_HOST>:<BACKEND_PORT>` (по умолчанию `http://127.0.0.1:8000`, если слушаете на `0.0.0.0`).
@@ -88,7 +88,7 @@ flowchart TB
 | `make install` | venv и зависимости |
 | `make run` | Telegram-бот |
 | `make run-backend` | HTTP API (backend) |
-| `make test` | pytest (в т.ч. тесты API) |
+| `make test` | pytest (нужен запущенный PostgreSQL с применёнными миграциями — как для `run-backend`) |
 | `make lint` | ruff check |
 | `make format` | ruff format |
 | `make check` | линт и тесты подряд (удобно перед коммитом) |

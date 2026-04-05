@@ -8,10 +8,12 @@
 
 | | |
 |--|--|
-| **Статус** | 🚧 In Progress |
-| **Прогресс** | 4 / 5 задач (01–04 ✅; 05 📋) |
+| **Статус** | ✅ Done (итерация закрыта 2026-04-05) |
+| **Прогресс** | 5 / 5 задач (01–05 ✅) |
 | **План** | [impl/database/plan.md](impl/database/plan.md) · [iter-3-data-layer/plan.md](impl/database/iter-3-data-layer/plan.md) |
 | **Summary** | [impl/database/summary.md](impl/database/summary.md) · [iter-3-data-layer/summary.md](impl/database/iter-3-data-layer/summary.md) |
+
+Сводка закрытия итерации: [impl/database/summary.md](impl/database/summary.md) · [iter-3-data-layer/summary.md](impl/database/iter-3-data-layer/summary.md).
 
 ## Легенда статусов
 
@@ -47,7 +49,7 @@
 | 02 | Проектирование схемы данных | ✅ Done | [план](impl/database/iter-3-data-layer/tasks/task-02-schema-design/plan.md) \| [summary](impl/database/iter-3-data-layer/tasks/task-02-schema-design/summary.md) |
 | 03 | Выбор инструментов миграций и доступа к БД | ✅ Done | [план](impl/database/iter-3-data-layer/tasks/task-03-tooling-adr/plan.md) \| [summary](impl/database/iter-3-data-layer/tasks/task-03-tooling-adr/summary.md) |
 | 04 | Инфраструктура БД | ✅ Done | [план](impl/database/iter-3-data-layer/tasks/task-04-db-infra/plan.md) \| [summary](impl/database/iter-3-data-layer/tasks/task-04-db-infra/summary.md) |
-| 05 | ORM-модели, репозитории и интеграция в backend | 📋 Planned | [план](impl/database/iter-3-data-layer/tasks/task-05-orm-integration/plan.md) \| [summary](impl/database/iter-3-data-layer/tasks/task-05-orm-integration/summary.md) |
+| 05 | ORM-модели, репозитории и интеграция в backend | ✅ Done | [план](impl/database/iter-3-data-layer/tasks/task-05-orm-integration/plan.md) \| [summary](impl/database/iter-3-data-layer/tasks/task-05-orm-integration/summary.md) |
 
 ---
 
@@ -221,7 +223,7 @@
 
 ---
 
-## Задача 05: ORM-модели, репозитории и интеграция в backend 📋
+## Задача 05: ORM-модели, репозитории и интеграция в backend ✅
 
 ### Цель
 
@@ -229,15 +231,15 @@
 
 ### Состав работ
 
-- [ ] ORM-модели по физической схеме (инструмент — по результатам задачи 03)
-- [ ] Слой репозиториев: абстракция (протокол / ABC) + реализация для PostgreSQL
-- [ ] Интеграция в FastAPI: DI (`Depends`), управление сессиями и транзакциями
-- [ ] Адаптация существующих API-тестов (`tests/api/`) для работы с БД (или тестовый in-memory fallback)
-- [ ] Тесты репозиториев (или контрактные тесты с миграциями)
-- [ ] Проверка: перезапуск backend — диалоги и прогресс на месте
-- [ ] Удаление или деактивация `InMemoryApiStore` (при необходимости — оставить как fallback для быстрых тестов)
-- [ ] Обновить `docs/data-model.md` (секция «Соответствие полей HTTP API v1» — при изменениях)
-- [ ] Обновить [README.md](../../README.md) (запуск с БД: `make db-up && make db-migrate && make run-backend`)
+- [x] ORM-модели по физической схеме (инструмент — по результатам задачи 03)
+- [x] Слой репозиториев: абстракция (протокол / ABC) + реализация для PostgreSQL
+- [x] Интеграция в FastAPI: DI (`Depends`), управление сессиями и транзакциями
+- [x] Адаптация существующих API-тестов (`tests/api/`) для работы с БД (или тестовый in-memory fallback)
+- [x] Тесты репозиториев (или контрактные тесты с миграциями)
+- [x] Проверка: перезапуск backend — диалоги и прогресс на месте
+- [x] Удаление или деактивация `InMemoryApiStore` (при необходимости — оставить как fallback для быстрых тестов)
+- [x] Обновить `docs/data-model.md` (секция «Соответствие полей HTTP API v1» — при изменениях)
+- [x] Обновить [README.md](../../README.md) (запуск с БД: `make db-up && make db-migrate && make run-backend`)
 
 ### Артефакты
 
@@ -262,12 +264,14 @@
 
 ### Документы
 
-- 📋 [План](impl/database/iter-3-data-layer/tasks/task-05-orm-integration/plan.md)
-- 📝 [Summary](impl/database/iter-3-data-layer/tasks/task-05-orm-integration/summary.md)
+- ✅ [План](impl/database/iter-3-data-layer/tasks/task-05-orm-integration/plan.md)
+- ✅ [Summary](impl/database/iter-3-data-layer/tasks/task-05-orm-integration/summary.md)
 
 ---
 
 ## Завершение итерации 3
+
+**Сводка итерации (область database):** [impl/database/summary.md](impl/database/summary.md) · [iter-3-data-layer/summary.md](impl/database/iter-3-data-layer/summary.md).
 
 | | |
 |--|--|

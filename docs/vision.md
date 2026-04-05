@@ -252,7 +252,7 @@ BACKEND_HOST=0.0.0.0
 BACKEND_PORT=8000
 DATABASE_URL=postgresql+asyncpg://user:pass@127.0.0.1:5433/dbname
 ```
-(для локального PostgreSQL из `docker-compose.yml` см. `.env.example`; до подключения приложения к БД в коде достаточно для миграций Alembic.)
+(для локального PostgreSQL из `docker-compose.yml` см. `.env.example`.) Процесс API подключается к БД через SQLAlchemy async (`DATABASE_URL`); без доступной БД с применёнными миграциями сценарии `/api/v1`, сохраняющие данные, недоступны.
 
 Файл `.env.example` — шаблон без значений, коммитится в репозиторий.
 
@@ -275,7 +275,7 @@ DATABASE_URL=postgresql+asyncpg://user:pass@127.0.0.1:5433/dbname
 | `make install` | Создать venv, установить зависимости |
 | `make run` | Запустить бота (MVP) |
 | `make run-backend` | Запустить HTTP API (Uvicorn, `BACKEND_HOST` / `BACKEND_PORT` из `.env`) |
-| `make test` | Запустить тесты (pytest) |
+| `make test` | Запустить тесты (pytest; интеграционные тесты API ожидают PostgreSQL с миграциями, см. `make db-up` / `make db-migrate`) |
 | `make lint` | Проверка кода (ruff check) |
 | `make format` | Форматирование (ruff format) |
 | `make check` | `lint` + `test` (быстрая проверка перед коммитом) |

@@ -13,6 +13,9 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 
+import backend.db.models  # noqa: F401 — регистрация таблиц в Base.metadata
+from backend.db.base import Base
+
 ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(ROOT / ".env")
 
@@ -20,7 +23,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = None
+target_metadata = Base.metadata
 
 
 def get_url() -> str:

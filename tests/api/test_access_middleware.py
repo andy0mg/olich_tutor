@@ -11,7 +11,7 @@ from tests.conftest import TELEGRAM_HEADERS
 
 
 async def test_health_returns_request_id() -> None:
-    app = create_app()
+    app = create_app(with_db_lifespan=False)
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         r = await client.get("/health")
@@ -21,7 +21,7 @@ async def test_health_returns_request_id() -> None:
 
 
 async def test_request_id_echo_from_client() -> None:
-    app = create_app()
+    app = create_app(with_db_lifespan=False)
     rid = "custom-req-id-abc"
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:

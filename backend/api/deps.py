@@ -5,9 +5,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Annotated
 
-from fastapi import Header, HTTPException
+from fastapi import Depends, Header, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.db.session import get_async_session
 from backend.schemas.api_v1 import Channel
+from backend.services.api_store import ApiStore, PostgresApiStore
 
 
 @dataclass(frozen=True)
@@ -33,3 +36,9 @@ async def get_client_context(
             ],
         )
     return ClientContext(channel=x_channel, external_user_id=trimmed)
+
+
+async def get_api_store(
+    session: Annotated[AsyncSession, Depends(get_async_session)],
+) -> ApiStore:
+    return PostgresApiStore(session)

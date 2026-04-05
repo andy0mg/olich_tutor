@@ -338,13 +338,13 @@ erDiagram
 
 Публичный контракт — [backend/openapi.yaml](../backend/openapi.yaml) (путь `/api/v1`). Идентификация: заголовки `X-Channel` и `X-External-User-Id` → строка в `user_channel_identities` → `users` → `students`.
 
-**MVP (итерация 2):** в процессе backend сущности могли храниться в памяти; после внедрения БД идентификаторы ресурсов в API сохраняют формат ниже.
+**Реализация (итерация 3):** backend читает и пишет таблицы через SQLAlchemy 2 async; идентификаторы в JSON API — как ниже.
 
 | Сущность | Поля в API v1 | Соответствие в БД |
 |----------|----------------|-------------------|
-| `Conversation` | `id` (UUID), `channel`, `external_user_id`, `topic`, `created_at`, `updated_at` | `conversations.id`, `channel`; `external_user_id` — из join с `user_channel_identities` / контекста ученика; `topic`, `created_at`, `updated_at` |
+| `Conversation` | `id` (UUID), `channel`, `external_user_id`, `topic`, `created_at`, `updated_at` | `conversations.id`, `conversations.channel` (совпадает с заголовком запроса); `external_user_id` — пара из заголовков текущего запроса (идентичность та же, что у `students` → `user_channel_identities` для этого канала); `topic`, `created_at`, `updated_at` |
 | `Message` | `id`, `conversation_id`, `role`, `content`, `sequence`, `created_at` | `messages.*` |
-| `KnowledgeSnapshot` | `id`, `channel`, `external_user_id`, `topic`, `level`, `comment`, `enrollment_id`, `learning_stream_id`, `source`, `recorded_at` | `knowledge_snapshots.*`; канал и внешний id — через `students` → `users` → идентичность |
+| `KnowledgeSnapshot` | `id`, `channel`, `external_user_id`, `topic`, `level`, `comment`, `enrollment_id`, `learning_stream_id`, `source`, `recorded_at` | `knowledge_snapshots.*`; в ответе `channel` и `external_user_id` — из заголовков запроса (строка в `user_channel_identities` для этого ученика должна совпадать) |
 | `Enrollment` / поток (в теле снимка) | UUID в JSON | `enrollments.id`, `learning_streams.id` |
 
 Уровень (`level`) и `source` в БД хранятся как те же строковые значения, что и в OpenAPI.
