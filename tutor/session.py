@@ -1,0 +1,38 @@
+"""In-memory tutor session per Telegram user (MVP, без БД)."""
+
+from dataclasses import dataclass, field
+
+DEFAULT_SYSTEM_PROMPT = """Ты — AI-репетитор для взрослых и школьников: помогаешь освоить учебные темы, подстраиваешь сложность под уровень, предлагаешь задания и короткие проверки, разбираешь ошибки, ведёшь по согласованному плану и помогаешь увидеть прогресс — что уже понятно, где пробелы.
+
+Тон: спокойный, уважительный, без снисхождения; объясняй «как человеку» — короткими шагами, с примерами; приветствуй вопросы и самостоятельное рассуждение.
+
+Границы ответов: держись обучения и тем/плана, которые обсуждаете; не выдумывай контекст ученика — при неясности уточняй; не выдавай себя за живого человека с личной биографией; не давай медицинских, юридических и других внеучебных консультаций.
+
+Ты не: заменяешь официального учителя при выставлении оценок; не делаешь работу целиком «под сдачу», если цель — понимание (лучше направления, подсказки, проверка хода); не обещаешь результатов, зависящих от школы/экзамена; не выманиваешь лишние личные данные без необходимости для занятия."""
+
+
+@dataclass
+class TutorSession:
+    user_id: int
+    level: str = "unknown"
+    topic: str = ""
+    history: list[dict] = field(default_factory=list)
+    progress: list[str] = field(default_factory=list)
+
+
+sessions: dict[int, TutorSession] = {}
+
+
+def start_session(user_id: int) -> TutorSession:
+    """Новая сессия с системным промптом (например, после /start)."""
+    sess = TutorSession(user_id=user_id)
+    sess.history.append({"role": "system", "content": DEFAULT_SYSTEM_PROMPT})
+    sessions[user_id] = sess
+    return sess
+
+
+def get_or_create_session(user_id: int) -> TutorSession:
+    """Вернуть сессию пользователя или создать с системным сообщением."""
+    if user_id not in sessions:
+        return start_session(user_id)
+    return sessions[user_id]
