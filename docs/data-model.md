@@ -110,6 +110,24 @@ erDiagram
 
 ---
 
+## Соответствие полей HTTP API v1
+
+Публичный контракт — [backend/openapi.yaml](../backend/openapi.yaml) (путь `/api/v1`). Ниже — сопоставление сущностей этого документа с полями API без изменения логической модели выше.
+
+**MVP (итерация 2):** сущности `Conversation`, `Message` и `KnowledgeSnapshot` на стороне backend хранятся **в памяти процесса** (без БД); после внедрения персистентности (итерация 3) логические поля и связи ниже сохраняют смысл для таблиц и миграций.
+
+Идентификация ученика на границе API (MVP, без отдельного ресурса `User` в URL): заголовки `X-Channel` (`telegram` \| `web`) и `X-External-User-Id` (строка; для Telegram — id пользователя в Telegram).
+
+| Сущность | Поля / смысл в data-model | Поля в API v1 |
+|----------|---------------------------|---------------|
+| `Conversation` | ученик, канал, тема, время | `id`, `channel`, `external_user_id`, `topic`, `created_at`, `updated_at` |
+| `Message` | диалог, роль, текст, порядок | `id`, `conversation_id`, `role` (`user` \| `assistant` \| `system`), `content`, `sequence`, `created_at` |
+| `KnowledgeSnapshot` | ученик, поток/участие, тема, уровень, комментарий, время | `id`, `channel`, `external_user_id`, `topic`, `level` (enum `needs_work` … `mastered`), `comment`, `enrollment_id`, `learning_stream_id`, `source` (`homework` \| …), `recorded_at` |
+
+Уровень в API v1 задан перечислением качественных значений; при появлении БД допускается хранить то же значение или отдельная таблица шкал.
+
+---
+
 ## Выбор СУБД
 
 Полное обоснование, альтернативы и последствия — в **[ADR-001: выбор СУБД](adr/adr-001-database.md)**.

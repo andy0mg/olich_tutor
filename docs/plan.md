@@ -23,7 +23,7 @@
 | Итерация | Название | Цель | Статус | Tasklist |
 |----------|----------|------|--------|----------|
 | 1 | Фундамент и Telegram-клиент | Рабочий канал: конфиг, LLM, сессии в памяти, диалог с репетитором | ✅ Done | [docs/tasks/tasklist-bot.md](tasks/tasklist-bot.md) |
-| 2 | MVP-учебные сценарии в боте | Объяснение, задание/тест, проверка, учёт прогресса (в памяти) | 📋 Planned | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
+| 2 | MVP-учебные сценарии в боте | Объяснение, задание/тест, проверка, учёт прогресса (в памяти) | 🚧 In Progress | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
 | 3 | Персистентность и модель данных | Учётки, диалоги, прогресс между перезапусками; миграции | 📋 Planned | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
 | 4 | Веб-клиент ученика и родителя | Те же данные через API: занятия, прогресс, активность | 📋 Planned | [docs/tasks/tasklist-web.md](tasks/tasklist-web.md) |
 | 5 | Расширение платформы | Преподаватель, материалы, потоки — по приоритету из [idea.md](idea.md) | 📋 Planned | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
@@ -68,6 +68,8 @@
 **Полезный результат:** ученик не только получает теорию, но и проходит проверку с обратной связью.
 
 **Артефакты:** расширение `backend/` / `tutor/` по фактической структуре репозитория; обработчики бота под новые шаги сценария.
+
+**Текущий прогресс (фиксация по мере итерации):** REST API и сценарии MVP на стороне backend реализованы и описаны в [README.md](../README.md), [docs/vision.md](vision.md), OpenAPI — [`backend/openapi.yaml`](../backend/openapi.yaml); состояние — в памяти до этапа персистентности. Завершение **итерации 2** по критериям выше (в т.ч. сценарии из бота end-to-end через backend и инженерные задачи области) — по [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md), задачи 07–08.
 
 ---
 

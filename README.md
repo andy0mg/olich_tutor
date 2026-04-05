@@ -32,7 +32,7 @@ flowchart TB
 | Этап | Название | Статус |
 |------|----------|--------|
 | 1 | Фундамент и Telegram-клиент | ✅ |
-| 2 | MVP-учебные сценарии в боте | 📋 |
+| 2 | MVP-учебные сценарии в боте | 🚧 |
 | 3 | Персистентность и модель данных | 📋 |
 | 4 | Веб-клиент ученика и родителя | 📋 |
 | 5 | Расширение платформы | 📋 |
@@ -51,4 +51,34 @@ flowchart TB
 
 ## Быстрый старт
 
-Скопируйте `.env.example` в `.env`, задайте `TELEGRAM_TOKEN` и `OPENROUTER_API_KEY` (см. [docs/vision.md](docs/vision.md)). Затем: `make install`, `make run`. Остальные цели `make` и стек описаны в vision.
+1. **Зависимости:** `make install` (venv и пакеты из `requirements.txt`).
+
+2. **Конфигурация:** скопируйте `.env.example` в `.env` и заполните переменные (в файле — комментарии, какая группа для бота, какая для backend).
+
+### Telegram-бот
+
+Нужны `TELEGRAM_TOKEN` и доступный backend: в `.env` задайте `BACKEND_BASE_URL` (по умолчанию `http://127.0.0.1:8000`). Рабочий диалог с LLM: сначала запустите **`make run-backend`**, затем в другом терминале **`make run`** (корневой `main.py`). Ключ `OPENROUTER_API_KEY` указывается для процесса API, не для бота. Подробнее — [docs/vision.md](docs/vision.md).
+
+### Backend API
+
+Отдельный процесс HTTP API (ядро; Telegram-бот ходит сюда по HTTP).
+
+- **Запуск:** `make run-backend` (эквивалент `python -m backend` — Uvicorn, хост и порт из `BACKEND_HOST` / `BACKEND_PORT` в `.env`).
+- **Базовый URL:** `http://<BACKEND_HOST>:<BACKEND_PORT>` (по умолчанию `http://127.0.0.1:8000`, если слушаете на `0.0.0.0`).
+- **Проверка живости:** `GET /health` или `GET /ready` (например `curl http://127.0.0.1:8000/health`).
+- **Документация API:** интерактивно — **Swagger UI** по пути `/docs`; схема OpenAPI в JSON — `/openapi.json`. Зафиксированная копия контракта в репозитории: [`backend/openapi.yaml`](backend/openapi.yaml).
+- **Минимум переменных для процесса API:** `TELEGRAM_TOKEN` не требуется. Для сценариев с реальным LLM задайте `OPENROUTER_API_KEY` (и при необходимости `OPENROUTER_BASE_URL`, `LLM_MODEL`).
+
+### Команды `make`
+
+| Команда | Назначение |
+|--------|------------|
+| `make install` | venv и зависимости |
+| `make run` | Telegram-бот |
+| `make run-backend` | HTTP API (backend) |
+| `make test` | pytest (в т.ч. тесты API) |
+| `make lint` | ruff check |
+| `make format` | ruff format |
+| `make check` | линт и тесты подряд (удобно перед коммитом) |
+
+Полный перечень переменных окружения — в `.env.example` и в [docs/vision.md](docs/vision.md).

@@ -1,0 +1,34 @@
+"""Настройки процесса HTTP API (загрузка из окружения и `.env`)."""
+
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    """Переменные backend; секреты не хранить в коде."""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    backend_host: str = "0.0.0.0"
+    backend_port: int = 8000
+    log_level: str = "INFO"
+
+    openrouter_api_key: str = Field(
+        default="",
+        description="OpenRouter API key (пустая строка допустима при моках LLM в тестах)",
+    )
+    openrouter_base_url: str = Field(
+        default="https://openrouter.ai/api/v1",
+        description="OpenAI-compatible API base URL",
+    )
+    llm_model: str = Field(
+        default="openai/gpt-4o-mini",
+        description="Model id on OpenRouter",
+    )
+
+
+settings = Settings()

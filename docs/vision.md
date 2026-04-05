@@ -39,7 +39,7 @@ graph LR
 
 ## Архитектурные решения
 
-Зафиксированные решения хранятся в [docs/adr/](adr/README.md). Первое принятое решение — выбор СУБД: [ADR-001: база данных](adr/adr-001-database.md) (PostgreSQL как целевая; SQLite — для dev/раннего MVP при переносимых миграциях).
+Зафиксированные решения хранятся в [docs/adr/](adr/README.md). Среди них: [ADR-001: база данных](adr/adr-001-database.md) (PostgreSQL как целевая; SQLite — для dev/раннего MVP при переносимых миграциях); [ADR-002: REST-слой backend](adr/adr-002-rest-backend.md) (FastAPI + Uvicorn).
 
 ---
 
@@ -71,6 +71,7 @@ graph TB
 ### Telegram-бот (`bot/`)
 - Клиент backend, не самостоятельное приложение.
 - Принимает сообщения от ученика, отправляет запросы в backend, возвращает ответ.
+- Не вызывает LLM/OpenRouter напрямую: ключ и модель задаются для процесса backend (см. `.env`).
 - Режим работы: polling (MVP) → webhook (продакшн).
 
 ### Веб-приложение (`web/`)
@@ -217,8 +218,14 @@ olich_tutor/
 
 | Пакет | Назначение |
 |---|---|
+| `fastapi` | REST API, валидация тел запросов, генерация OpenAPI |
+| `uvicorn[standard]` | ASGI-сервер для процесса backend |
 | `openai` | OpenAI-совместимый клиент для OpenRouter |
 | `python-dotenv` | Поддержка `.env` |
+
+Публичный контракт HTTP API для клиентов (бот, веб): спецификация **OpenAPI** — артефакт [`backend/openapi.yaml`](../backend/openapi.yaml) в репозитории; при запущенном сервисе схема также доступна как **`/openapi.json`**, интерактивно — **`/docs`** (Swagger UI). Задачи итерации backend — [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md).
+
+**Изменение контракта:** источник правды — `backend/openapi.yaml` и соответствующий код в `backend/`; интеграционные проверки — `tests/api/`. Типовой порядок: обновить OpenAPI (или согласованно отразить изменения в коде и затем в YAML) → правки схем/роутеров → `make test`. Ломающие изменения API согласовывать с клиентами (бот, будущий веб).
 
 ### Web (в перспективе)
 
@@ -235,6 +242,8 @@ OPENROUTER_API_KEY=...
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 LLM_MODEL=openai/gpt-4o-mini
 LOG_LEVEL=INFO
+BACKEND_HOST=0.0.0.0
+BACKEND_PORT=8000
 ```
 
 Файл `.env.example` — шаблон без значений, коммитится в репозиторий.
@@ -247,6 +256,7 @@ LOG_LEVEL=INFO
 - Уровень задаётся через `LOG_LEVEL`.
 - Формат: `%(asctime)s [%(levelname)s] %(name)s: %(message)s`.
 - MVP: вывод в stdout.
+- HTTP: логгер `backend.access` — одна строка на завершённый запрос: `request_id`, метод, путь (без query string), статус, длительность, `channel` и `external_user_id` из заголовков `X-Channel` / `X-External-User-Id` (если нет — `-`). Заголовок **`X-Request-ID`**: клиент может передать свой идентификатор; иначе сервер генерирует UUID и возвращает его в ответе. Тела запросов и секреты на уровне INFO не пишутся; при глобальном DEBUG осторожно с логами сторонних HTTP/LLM-библиотек.
 
 ---
 
@@ -256,8 +266,11 @@ LOG_LEVEL=INFO
 |---|---|
 | `make install` | Создать venv, установить зависимости |
 | `make run` | Запустить бота (MVP) |
+| `make run-backend` | Запустить HTTP API (Uvicorn, `BACKEND_HOST` / `BACKEND_PORT` из `.env`) |
+| `make test` | Запустить тесты (pytest) |
 | `make lint` | Проверка кода (ruff check) |
 | `make format` | Форматирование (ruff format) |
+| `make check` | `lint` + `test` (быстрая проверка перед коммитом) |
 
 ---
 

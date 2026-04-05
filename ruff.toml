@@ -1,0 +1,16 @@
+# Монорепо: backend, бот, тесты; служебные каталоги не линтим.
+target-version = "py312"
+line-length = 100
+
+extend-exclude = [
+    ".venv",
+    ".agents",
+    ".git",
+    "__pycache__",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".cursor",
+]
+
+[lint]
+extend-select = ["I"]

@@ -1,5 +1,11 @@
 aiogram>=3.15
+fastapi>=0.115
 openai>=1.70
 pydantic-settings>=2.8
 python-dotenv>=1.1
 ruff>=0.8.0
+uvicorn[standard]>=0.32
+openapi-spec-validator>=0.8
+httpx>=0.28
+pytest>=8.0
+pytest-asyncio>=0.24

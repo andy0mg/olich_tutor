@@ -17,3 +17,4 @@
 | № | Файл | Кратко |
 |---|---|---|
 | 001 | [adr-001-database.md](adr-001-database.md) | СУБД: PostgreSQL как целевая; SQLite допустим для dev/раннего MVP при переносимых миграциях |
+| 002 | [adr-002-rest-backend.md](adr-002-rest-backend.md) | REST API: FastAPI + Uvicorn; OpenAPI как контракт для клиентов |

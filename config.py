@@ -14,7 +14,14 @@ class Settings(BaseSettings):
     )
 
     telegram_token: str = Field(description="Telegram Bot API token")
-    openrouter_api_key: str = Field(description="OpenRouter API key")
+    backend_base_url: str = Field(
+        default="http://127.0.0.1:8000",
+        description="Base URL of backend HTTP API (no trailing slash)",
+    )
+    openrouter_api_key: str = Field(
+        default="",
+        description="OpenRouter API key (для процесса бота не используется)",
+    )
     openrouter_base_url: str = Field(
         default="https://openrouter.ai/api/v1",
         description="OpenAI-compatible API base URL",
