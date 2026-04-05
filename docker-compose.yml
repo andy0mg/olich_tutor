@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: olich_tutor_postgres
+    environment:
+      POSTGRES_USER: olich
+      POSTGRES_PASSWORD: olich_dev
+      POSTGRES_DB: olich_tutor
+    ports:
+      # 5433 на хосте, чтобы не конфликтовать с другим PostgreSQL на :5432
+      - "5433:5432"
+    volumes:
+      - olich_tutor_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U olich -d olich_tutor"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  olich_tutor_pg_data:

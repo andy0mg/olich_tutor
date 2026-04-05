@@ -39,7 +39,7 @@ graph LR
 
 ## Архитектурные решения
 
-Зафиксированные решения хранятся в [docs/adr/](adr/README.md). Среди них: [ADR-001: база данных](adr/adr-001-database.md) (PostgreSQL как целевая; SQLite — для dev/раннего MVP при переносимых миграциях); [ADR-002: REST-слой backend](adr/adr-002-rest-backend.md) (FastAPI + Uvicorn).
+Зафиксированные решения хранятся в [docs/adr/](adr/README.md). Среди них: [ADR-001: база данных](adr/adr-001-database.md) (PostgreSQL как целевая; SQLite — для dev/раннего MVP при переносимых миграциях); [ADR-002: REST-слой backend](adr/adr-002-rest-backend.md) (FastAPI + Uvicorn); [ADR-003: ORM и миграции](adr/adr-003-orm-migrations.md) (SQLAlchemy 2 async, asyncpg, Alembic).
 
 ---
 
@@ -222,6 +222,12 @@ olich_tutor/
 | `uvicorn[standard]` | ASGI-сервер для процесса backend |
 | `openai` | OpenAI-совместимый клиент для OpenRouter |
 | `python-dotenv` | Поддержка `.env` |
+| `sqlalchemy[asyncio]` | ORM 2.0, async-доступ к БД ([ADR-003](adr/adr-003-orm-migrations.md)) |
+| `asyncpg` | Асинхронный драйвер PostgreSQL |
+| `alembic` | Миграции схемы БД |
+| `greenlet` | Зависимость SQLAlchemy для async-паттернов |
+
+Пакеты из таблицы выше подключаются в `requirements.txt`. `DATABASE_URL` и команды `make db-*` — [iter-3-data-layer, задача 04](tasks/tasklist-database.md); интеграция ORM в API — задача 05.
 
 Публичный контракт HTTP API для клиентов (бот, веб): спецификация **OpenAPI** — артефакт [`backend/openapi.yaml`](../backend/openapi.yaml) в репозитории; при запущенном сервисе схема также доступна как **`/openapi.json`**, интерактивно — **`/docs`** (Swagger UI). Задачи итерации backend — [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md).
 
@@ -244,7 +250,9 @@ LLM_MODEL=openai/gpt-4o-mini
 LOG_LEVEL=INFO
 BACKEND_HOST=0.0.0.0
 BACKEND_PORT=8000
+DATABASE_URL=postgresql+asyncpg://user:pass@127.0.0.1:5433/dbname
 ```
+(для локального PostgreSQL из `docker-compose.yml` см. `.env.example`; до подключения приложения к БД в коде достаточно для миграций Alembic.)
 
 Файл `.env.example` — шаблон без значений, коммитится в репозиторий.
 
@@ -271,6 +279,11 @@ BACKEND_PORT=8000
 | `make lint` | Проверка кода (ruff check) |
 | `make format` | Форматирование (ruff format) |
 | `make check` | `lint` + `test` (быстрая проверка перед коммитом) |
+| `make db-up` | Поднять PostgreSQL (`docker compose up -d --wait`) |
+| `make db-down` | Остановить контейнеры БД (`docker compose stop`) |
+| `make db-migrate` | Применить миграции Alembic (`backend/alembic.ini`) |
+| `make db-reset` | Удалить volume БД, поднять заново и применить миграции |
+| `make db-shell` | Интерактивный `psql` в контейнере PostgreSQL |
 
 ---
 

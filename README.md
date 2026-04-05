@@ -55,6 +55,18 @@ flowchart TB
 
 2. **Конфигурация:** скопируйте `.env.example` в `.env` и заполните переменные (в файле — комментарии, какая группа для бота, какая для backend).
 
+### PostgreSQL (локально)
+
+Нужен [Docker](https://docs.docker.com/get-docker/) с Docker Compose.
+
+1. `make db-up` — контейнер PostgreSQL (на хосте порт **`5433`** → 5432 в контейнере; креды в [`docker-compose.yml`](docker-compose.yml) и `.env.example`). Если порт свободен, при желании можно сменить маппинг в compose на `5432:5432`.
+2. Убедитесь, что в `.env` задан `DATABASE_URL` (пример — в `.env.example`).
+3. `make db-migrate` — применить схему (Alembic, ревизии в `backend/alembic/versions/`).
+
+Полный сброс данных dev: `make db-reset` (удаляет volume и снова накатывает миграции). Подключение к БД: `make db-shell`, в psql — `\dt` для списка таблиц.
+
+**Ошибка `failed to connect to the docker API` / `npipe:////./pipe/dockerDesktopLinuxEngine`:** демон Docker не запущен. На Windows откройте **Docker Desktop**, дождитесь индикатора «Running», снова выполните `docker ps` — затем `make db-up`. Цели `make db-up` и др. сначала вызывают проверку и при недоступности Docker выводят подсказку.
+
 ### Telegram-бот
 
 Нужны `TELEGRAM_TOKEN` и доступный backend: в `.env` задайте `BACKEND_BASE_URL` (по умолчанию `http://127.0.0.1:8000`). Рабочий диалог с LLM: сначала запустите **`make run-backend`**, затем в другом терминале **`make run`** (корневой `main.py`). Ключ `OPENROUTER_API_KEY` указывается для процесса API, не для бота. Подробнее — [docs/vision.md](docs/vision.md).
@@ -80,5 +92,10 @@ flowchart TB
 | `make lint` | ruff check |
 | `make format` | ruff format |
 | `make check` | линт и тесты подряд (удобно перед коммитом) |
+| `make db-up` | PostgreSQL в Docker |
+| `make db-down` | остановить контейнер БД |
+| `make db-migrate` | миграции Alembic |
+| `make db-reset` | пересоздать БД с нуля и применить миграции |
+| `make db-shell` | `psql` в контейнере |
 
 Полный перечень переменных окружения — в `.env.example` и в [docs/vision.md](docs/vision.md).

@@ -18,13 +18,13 @@
 
 ## Обзор итераций
 
-Итерации 2 и 3 ведутся в одном [tasklist-backend.md](tasks/tasklist-backend.md) как последовательные волны внутри области backend; содержимое tasklist обновляется по мере этапов.
+Итерация 2 ведётся в [tasklist-backend.md](tasks/tasklist-backend.md). Итерация 3 детализирована в отдельном [tasklist-database.md](tasks/tasklist-database.md) (область database); задача 09 в tasklist-backend ссылается на него.
 
 | Итерация | Название | Цель | Статус | Tasklist |
 |----------|----------|------|--------|----------|
 | 1 | Фундамент и Telegram-клиент | Рабочий канал: конфиг, LLM, сессии в памяти, диалог с репетитором | ✅ Done | [docs/tasks/tasklist-bot.md](tasks/tasklist-bot.md) |
 | 2 | MVP-учебные сценарии в боте | Объяснение, задание/тест, проверка, учёт прогресса (в памяти) | 🚧 In Progress | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
-| 3 | Персистентность и модель данных | Учётки, диалоги, прогресс между перезапусками; миграции | 📋 Planned | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
+| 3 | Персистентность и модель данных | Учётки, диалоги, прогресс между перезапусками; миграции | 📋 Planned | [docs/tasks/tasklist-database.md](tasks/tasklist-database.md) |
 | 4 | Веб-клиент ученика и родителя | Те же данные через API: занятия, прогресс, активность | 📋 Planned | [docs/tasks/tasklist-web.md](tasks/tasklist-web.md) |
 | 5 | Расширение платформы | Преподаватель, материалы, потоки — по приоритету из [idea.md](idea.md) | 📋 Planned | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
 | 6 | Продакшн и сопровождение | Webhook, деплой, наблюдаемость, резервное копирование | 📋 Planned | [docs/tasks/tasklist-infra.md](tasks/tasklist-infra.md) |
@@ -84,7 +84,7 @@
 - Реализован выбранный в [ADR-001](adr/adr-001-database.md) путь (PostgreSQL / SQLite для dev); восстановление истории после рестарта.
 - Нет критичной потери данных при штатном перезапуске сервиса; миграции переносимы между окружениями.
 
-**Связь с tasklist:** [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md)
+**Связь с tasklist:** [docs/tasks/tasklist-database.md](tasks/tasklist-database.md) (ведущий; задача 09 в [tasklist-backend.md](tasks/tasklist-backend.md) ссылается на него)
 
 **Полезный результат:** прогресс и диалоги не обнуляются при обновлении или перезапуске сервиса.
 

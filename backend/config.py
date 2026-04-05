@@ -29,6 +29,10 @@ class Settings(BaseSettings):
         default="openai/gpt-4o-mini",
         description="Model id on OpenRouter",
     )
+    database_url: str = Field(
+        default="postgresql+asyncpg://olich:olich_dev@127.0.0.1:5433/olich_tutor",
+        description="Async SQLAlchemy URL (postgresql+asyncpg://…)",
+    )
 
 
 settings = Settings()
