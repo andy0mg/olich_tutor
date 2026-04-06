@@ -8,7 +8,7 @@ from httpx import ASGITransport, AsyncClient
 
 from backend.app import create_app
 from backend.llm.deps import get_llm_client
-from tests.conftest import TELEGRAM_HEADERS
+from tests.conftest import TELEGRAM_HEADERS, FakeLLMClient
 
 
 async def test_create_and_get_conversation(client: AsyncClient) -> None:
@@ -101,6 +101,45 @@ async def test_invalid_conversation_uuid(client: AsyncClient) -> None:
     assert r.status_code == 422
 
 
+async def test_post_message_image_only_stores_metadata(client: AsyncClient) -> None:
+    r = await client.post(
+        "/api/v1/conversations",
+        json={},
+        headers=TELEGRAM_HEADERS,
+    )
+    assert r.status_code == 201
+    cid = r.json()["id"]
+    r2 = await client.post(
+        f"/api/v1/conversations/{cid}/messages",
+        json={
+            "content": "",
+            "image_base64": "QQ==",
+            "image_mime_type": "image/jpeg",
+        },
+        headers=TELEGRAM_HEADERS,
+    )
+    assert r2.status_code == 200
+    um = r2.json()["user_message"]
+    assert um["content"] == "(Задача по фото)"
+    assert um["metadata"] is not None
+    assert "image" in um["metadata"]
+
+
+async def test_post_message_image_requires_mime_pair(client: AsyncClient) -> None:
+    r = await client.post(
+        "/api/v1/conversations",
+        json={},
+        headers=TELEGRAM_HEADERS,
+    )
+    cid = r.json()["id"]
+    r2 = await client.post(
+        f"/api/v1/conversations/{cid}/messages",
+        json={"content": "текст", "image_base64": "QQ=="},
+        headers=TELEGRAM_HEADERS,
+    )
+    assert r2.status_code == 422
+
+
 async def test_post_message_empty_content(client: AsyncClient) -> None:
     r = await client.post(
         "/api/v1/conversations",
@@ -135,6 +174,38 @@ async def test_create_conversation_rejects_missing_external_user_id_header(
         headers={"X-Channel": "telegram"},
     )
     assert response.status_code == 422
+
+
+async def test_post_message_with_image_sends_multimodal_to_llm() -> None:
+    fake_llm = FakeLLMClient()
+    app = create_app(with_db_lifespan=False)
+    app.dependency_overrides[get_llm_client] = lambda: fake_llm
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        r = await ac.post(
+            "/api/v1/conversations",
+            json={},
+            headers=TELEGRAM_HEADERS,
+        )
+        assert r.status_code == 201
+        cid = r.json()["id"]
+        r2 = await ac.post(
+            f"/api/v1/conversations/{cid}/messages",
+            json={
+                "content": "Что на картинке?",
+                "image_base64": "QQ==",
+                "image_mime_type": "image/jpeg",
+            },
+            headers=TELEGRAM_HEADERS,
+        )
+    app.dependency_overrides.clear()
+    assert r2.status_code == 200
+    assert fake_llm.last_messages is not None
+    user_msgs = [m for m in fake_llm.last_messages if m.get("role") == "user"]
+    content = user_msgs[-1]["content"]
+    assert isinstance(content, list)
+    part_types = {p.get("type") for p in content}
+    assert part_types == {"text", "image_url"}
 
 
 class _BrokenLLM:

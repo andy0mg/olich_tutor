@@ -1,0 +1,26 @@
+# Production-oriented PostgreSQL: порт только на 127.0.0.1, пароль из .env
+# Запуск с корня репозитория:
+#   docker compose -f deploy/docker-compose.postgres.yml --env-file deploy/.env.postgres up -d
+#
+# Создайте deploy/.env.postgres из deploy/env.postgres.example
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: olich_tutor_postgres
+    environment:
+      POSTGRES_USER: olich
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in deploy/.env.postgres}
+      POSTGRES_DB: olich_tutor
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - olich_tutor_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U olich -d olich_tutor"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  olich_tutor_pg_data:

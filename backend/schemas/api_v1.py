@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 Channel = Literal["telegram", "web"]
 KnowledgeLevel = Literal["needs_work", "developing", "proficient", "mastered"]
@@ -40,6 +40,7 @@ class Message(BaseModel):
     content: str
     sequence: int
     created_at: datetime
+    metadata: dict | None = None
 
 
 class ConversationWithMessages(BaseModel):
@@ -49,7 +50,24 @@ class ConversationWithMessages(BaseModel):
 
 
 class PostMessageRequest(BaseModel):
-    content: str = Field(..., min_length=1)
+    """Текст и/или изображение (base64). Пустой текст допустим, если есть картинка."""
+
+    content: str = Field(default="", max_length=50000)
+    image_base64: str | None = Field(default=None, max_length=20_000_000)
+    image_mime_type: str | None = Field(default=None, max_length=128)
+
+    @model_validator(mode="after")
+    def content_or_image_and_pair(self) -> PostMessageRequest:
+        has_b64 = self.image_base64 is not None
+        has_mime = self.image_mime_type is not None
+        if has_b64 != has_mime:
+            msg = "image_base64 и image_mime_type задаются вместе или оба отсутствуют"
+            raise ValueError(msg)
+        has_image = bool(self.image_base64 and self.image_mime_type)
+        if not self.content.strip() and not has_image:
+            msg = "Нужен непустой текст или изображение"
+            raise ValueError(msg)
+        return self
 
 
 class MessageTurnResponse(BaseModel):

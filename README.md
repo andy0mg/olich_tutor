@@ -40,6 +40,10 @@ flowchart TB
 
 Подробности этапов и критерии — в [docs/plan.md](docs/plan.md).
 
+## Деплой на VPS
+
+Пошаговая инструкция (PostgreSQL в Docker на localhost, systemd для API и бота, шаблоны `.env`): **[deploy/README.md](deploy/README.md)**. Автодеплой по push в `main`/`master` через GitHub Actions — раздел **CI/CD** в том же файле и job `deploy` в [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
 ## Документация
 
 - [Идея продукта](docs/idea.md)

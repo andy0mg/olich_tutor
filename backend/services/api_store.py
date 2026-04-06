@@ -84,6 +84,7 @@ def _row_to_message(row: MessageRow) -> Message:
         content=row.content,
         sequence=row.sequence,
         created_at=row.created_at,
+        metadata=row.extra_metadata,
     )
 
 
@@ -257,12 +258,22 @@ class PostgresApiStore:
         assert max_seq is not None
         next_seq = int(max_seq) + 1
         now = _utcnow()
+        text = body.content.strip()
+        if body.image_base64 and body.image_mime_type:
+            meta: dict | None = {
+                "image": {"mime": body.image_mime_type, "b64": body.image_base64},
+            }
+            if not text:
+                text = "(Задача по фото)"
+        else:
+            meta = None
         msg = MessageRow(
             id=uuid4(),
             conversation_id=conversation_id,
             role="user",
-            content=body.content,
+            content=text,
             sequence=next_seq,
+            extra_metadata=meta,
             created_at=now,
         )
         self._session.add(msg)

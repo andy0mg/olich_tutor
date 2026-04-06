@@ -58,12 +58,19 @@ class BackendApiClient:
         conversation_id: str,
         external_user_id: str,
         content: str,
+        *,
+        image_base64: str | None = None,
+        image_mime_type: str | None = None,
     ) -> str:
+        body: dict[str, Any] = {"content": content}
+        if image_base64 is not None and image_mime_type is not None:
+            body["image_base64"] = image_base64
+            body["image_mime_type"] = image_mime_type
         url = f"{self._base}{API_V1}/conversations/{conversation_id}/messages"
         r = await self._http.post(
             url,
             headers=self._headers(external_user_id),
-            json={"content": content},
+            json=body,
         )
         if r.status_code == 404:
             raise ConversationNotFoundError()

@@ -1,4 +1,6 @@
 .env
+deploy/.env
+deploy/.env.postgres
 .venv/
 __pycache__/
 *.py[cod]

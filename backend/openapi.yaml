@@ -342,6 +342,10 @@ components:
         created_at:
           type: string
           format: date-time
+        metadata:
+          type: object
+          nullable: true
+          description: Служебные данные (например изображение для vision).
 
     ConversationWithMessages:
       type: object
@@ -360,12 +364,18 @@ components:
 
     PostMessageRequest:
       type: object
-      required: [content]
       properties:
         content:
           type: string
-          minLength: 1
-          description: Текст сообщения пользователя.
+          description: Текст сообщения; может быть пустым, если передано изображение.
+        image_base64:
+          type: string
+          nullable: true
+          description: Картинка в Base64 (вместе с image_mime_type).
+        image_mime_type:
+          type: string
+          nullable: true
+          description: MIME-тип, например image/jpeg.
 
     MessageTurnResponse:
       type: object

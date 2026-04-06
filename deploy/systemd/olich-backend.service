@@ -1,0 +1,21 @@
+[Unit]
+Description=olich_tutor HTTP API (FastAPI/Uvicorn)
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=olich
+Group=olich
+WorkingDirectory=/opt/olich_tutor
+EnvironmentFile=-/opt/olich_tutor/.env
+ExecStart=/opt/olich_tutor/.venv/bin/python -m backend
+Restart=on-failure
+RestartSec=5
+
+# Безопасность (при необходимости раскомментируйте после проверки путей)
+# NoNewPrivileges=true
+# PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

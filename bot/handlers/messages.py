@@ -1,5 +1,7 @@
 """Текстовые сообщения и команда /start."""
 
+import base64
+import io
 import logging
 
 import httpx
@@ -40,7 +42,8 @@ def create_messages_router(api: BackendApiClient) -> Router:
 
     @router.message()
     async def on_text(message: Message) -> None:
-        if not message.text:
+        user_text = (message.text or message.caption or "").strip()
+        if not user_text and not message.photo:
             return
         user = message.from_user
         if not user:
@@ -57,12 +60,37 @@ def create_messages_router(api: BackendApiClient) -> Router:
 
         try:
             cid = await ensure_conversation_id()
+            image_b64: str | None = None
+            image_mime = "image/jpeg"
+            if message.photo:
+                buf = io.BytesIO()
+                await message.bot.download(file=message.photo[-1], destination=buf)
+                image_b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+            prompt_text = user_text or "(Задача по фото)"
             try:
-                raw_reply = await api.post_message(cid, ext_id, message.text)
+                if image_b64:
+                    raw_reply = await api.post_message(
+                        cid,
+                        ext_id,
+                        prompt_text,
+                        image_base64=image_b64,
+                        image_mime_type=image_mime,
+                    )
+                else:
+                    raw_reply = await api.post_message(cid, ext_id, prompt_text)
             except ConversationNotFoundError:
                 cid = await api.create_conversation(ext_id)
                 conversation_by_user[user_id] = cid
-                raw_reply = await api.post_message(cid, ext_id, message.text)
+                if image_b64:
+                    raw_reply = await api.post_message(
+                        cid,
+                        ext_id,
+                        prompt_text,
+                        image_base64=image_b64,
+                        image_mime_type=image_mime,
+                    )
+                else:
+                    raw_reply = await api.post_message(cid, ext_id, prompt_text)
             reply = plain_math_for_telegram(raw_reply)
         except httpx.HTTPError:
             logger.exception("Reply failed for user_id=%s", user_id)
