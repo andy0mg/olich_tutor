@@ -22,12 +22,12 @@
 
 | Итерация | Название | Цель | Статус | Tasklist |
 |----------|----------|------|--------|----------|
-| 1 | Фундамент и Telegram-клиент | Рабочий канал: конфиг, LLM, сессии в памяти, диалог с репетитором | ✅ Done | [docs/tasks/tasklist-bot.md](tasks/tasklist-bot.md) |
-| 2 | MVP-учебные сценарии в боте | Объяснение, задание/тест, проверка, учёт прогресса (в памяти) | 🚧 In Progress | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
-| 3 | Персистентность и модель данных | Учётки, диалоги, прогресс между перезапусками; миграции | 📋 Planned | [docs/tasks/tasklist-database.md](tasks/tasklist-database.md) |
-| 4 | Веб-клиент ученика и родителя | Те же данные через API: занятия, прогресс, активность | 📋 Planned | [docs/tasks/tasklist-web.md](tasks/tasklist-web.md) |
+| 1 | Фундамент и Telegram-клиент | Рабочий канал: конфиг, LLM, сессии в памяти, диалог с репетитором | ✅ Done | — |
+| 2 | MVP-учебные сценарии в боте | Объяснение, задание/тест, проверка, учёт прогресса (в памяти) | ✅ Done | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
+| 3 | Персистентность и модель данных | Учётки, диалоги, прогресс между перезапусками; миграции | ✅ Done | [docs/tasks/tasklist-database.md](tasks/tasklist-database.md) |
+| 4 | Веб-клиент ученика и родителя | Те же данные через API: занятия, прогресс, активность | 📋 Planned | — |
 | 5 | Расширение платформы | Преподаватель, материалы, потоки — по приоритету из [idea.md](idea.md) | 📋 Planned | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
-| 6 | Продакшн и сопровождение | Webhook, деплой, наблюдаемость, резервное копирование | 📋 Planned | [docs/tasks/tasklist-infra.md](tasks/tasklist-infra.md) |
+| 6 | Продакшн и сопровождение | Webhook, деплой, наблюдаемость, резервное копирование | 📋 Planned | — |
 
 ---
 
