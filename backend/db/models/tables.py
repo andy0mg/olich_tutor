@@ -211,6 +211,31 @@ class Message(Base):
     )
 
 
+class WebAuthCode(Base):
+    __tablename__ = "web_auth_codes"
+    __table_args__ = (
+        CheckConstraint(
+            "purpose IN ('student_login', 'parent_invite')",
+            name="ck_web_auth_codes_purpose",
+        ),
+        Index("ix_web_auth_codes_code", "code", unique=True),
+        Index("ix_web_auth_codes_user_id", "user_id"),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    code: Mapped[str] = mapped_column(Text, nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    student_id: Mapped[int | None] = mapped_column(
+        ForeignKey("students.id", ondelete="CASCADE"), nullable=True
+    )
+    purpose: Mapped[str] = mapped_column(Text, nullable=False)
+    used: Mapped[bool] = mapped_column(Boolean, server_default=text("false"), nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=text("now()"), nullable=False
+    )
+
+
 class KnowledgeSnapshot(Base):
     __tablename__ = "knowledge_snapshots"
     __table_args__ = (

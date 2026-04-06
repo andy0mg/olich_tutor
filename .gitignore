@@ -10,3 +10,7 @@ __pycache__/
 .eggs/
 dist/
 build/
+
+# Web client
+web/node_modules/
+web/dist/

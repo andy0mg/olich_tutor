@@ -8,7 +8,11 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import JSONResponse
 
-from backend.api.deps import ClientContext, get_api_store, get_client_context
+from backend.api.deps import (
+    ClientContext,
+    get_api_store,
+    get_client_context,
+)
 from backend.llm.client import LLMClient
 from backend.llm.deps import get_llm_client
 from backend.schemas.api_v1 import (
@@ -22,6 +26,14 @@ from backend.services.api_store import ApiStore
 from backend.services.conversation_turn import post_message_turn
 
 router = APIRouter(tags=["conversations"])
+
+
+@router.get("/conversations", response_model=list[Conversation])
+async def list_conversations(
+    ctx: Annotated[ClientContext, Depends(get_client_context)],
+    store: Annotated[ApiStore, Depends(get_api_store)],
+) -> list[Conversation]:
+    return await store.list_conversations(ctx.channel, ctx.external_user_id)
 
 
 @router.post("/conversations", status_code=201, response_model=Conversation)

@@ -142,6 +142,18 @@ class ApiStore(Protocol):
         body: CreateKnowledgeSnapshotRequest,
     ) -> KnowledgeSnapshot | JSONResponse: ...
 
+    async def list_conversations(
+        self,
+        channel: Channel,
+        external_user_id: str,
+    ) -> list[Conversation]: ...
+
+    async def list_knowledge_snapshots(
+        self,
+        channel: Channel,
+        external_user_id: str,
+    ) -> list[KnowledgeSnapshot]: ...
+
 
 class PostgresApiStore:
     """Реализация ApiStore поверх AsyncSession."""
@@ -378,3 +390,45 @@ class PostgresApiStore:
             source=row.source,  # type: ignore[arg-type]
             recorded_at=row.recorded_at,
         )
+
+    async def list_conversations(
+        self,
+        channel: Channel,
+        external_user_id: str,
+    ) -> list[Conversation]:
+        student = await get_or_create_student(self._session, channel, external_user_id)
+        result = await self._session.execute(
+            select(ConversationRow)
+            .where(ConversationRow.student_id == student.id)
+            .order_by(ConversationRow.updated_at.desc())
+        )
+        rows = list(result.scalars().all())
+        return [_row_to_conversation(r, external_user_id) for r in rows]
+
+    async def list_knowledge_snapshots(
+        self,
+        channel: Channel,
+        external_user_id: str,
+    ) -> list[KnowledgeSnapshot]:
+        student = await get_or_create_student(self._session, channel, external_user_id)
+        result = await self._session.execute(
+            select(KnowledgeSnapshotRow)
+            .where(KnowledgeSnapshotRow.student_id == student.id)
+            .order_by(KnowledgeSnapshotRow.recorded_at.desc())
+        )
+        rows = list(result.scalars().all())
+        return [
+            KnowledgeSnapshot(
+                id=r.id,
+                channel=channel,
+                external_user_id=external_user_id,
+                topic=r.topic,
+                level=r.level,  # type: ignore[arg-type]
+                comment=r.comment,
+                enrollment_id=r.enrollment_id,
+                learning_stream_id=r.learning_stream_id,
+                source=r.source,  # type: ignore[arg-type]
+                recorded_at=r.recorded_at,
+            )
+            for r in rows
+        ]

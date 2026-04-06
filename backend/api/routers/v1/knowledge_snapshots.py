@@ -14,6 +14,14 @@ from backend.services.api_store import ApiStore
 router = APIRouter(tags=["knowledge_snapshots"])
 
 
+@router.get("/knowledge-snapshots", response_model=list[KnowledgeSnapshot])
+async def list_knowledge_snapshots(
+    ctx: Annotated[ClientContext, Depends(get_client_context)],
+    store: Annotated[ApiStore, Depends(get_api_store)],
+) -> list[KnowledgeSnapshot] | JSONResponse:
+    return await store.list_knowledge_snapshots(ctx.channel, ctx.external_user_id)
+
+
 @router.post("/knowledge-snapshots", status_code=201, response_model=KnowledgeSnapshot)
 async def create_knowledge_snapshot(
     body: CreateKnowledgeSnapshotRequest,

@@ -33,6 +33,13 @@ class Settings(BaseSettings):
         default="postgresql+asyncpg://olich:olich_dev@127.0.0.1:5433/olich_tutor",
         description="Async SQLAlchemy URL (postgresql+asyncpg://…)",
     )
+    jwt_secret: str = Field(
+        default="change-me-in-production",
+        description="Secret key for JWT signing (HS256)",
+    )
+    jwt_access_expire_minutes: int = Field(default=60, description="Access token TTL in minutes")
+    jwt_refresh_expire_days: int = Field(default=30, description="Refresh token TTL in days")
+    web_code_expire_minutes: int = Field(default=15, description="One-time web auth code TTL")
 
 
 settings = Settings()

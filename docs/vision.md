@@ -177,8 +177,9 @@ olich_tutor/
 │   ├── services/           # Бизнес-логика
 │   ├── llm/                # LLM-клиент (OpenRouter)
 │   └── tutor/              # Сессия и прогресс ученика
-├── web/                    # Веб-приложение (клиент)
-│   └── ...                 # Детали — после начала разработки
+├── web/                    # Веб-приложение (клиент, React + Vite + TS)
+│   ├── src/                # Исходники SPA
+│   └── package.json        # npm-зависимости
 ├── docs/
 │   ├── idea.md             # Продуктовый контекст
 │   ├── vision.md           # Этот документ
@@ -233,9 +234,18 @@ olich_tutor/
 
 **Изменение контракта:** источник правды — `backend/openapi.yaml` и соответствующий код в `backend/`; интеграционные проверки — `tests/api/`. Типовой порядок: обновить OpenAPI (или согласованно отразить изменения в коде и затем в YAML) → правки схем/роутеров → `make test`. Ломающие изменения API согласовывать с клиентами (бот, будущий веб).
 
-### Web (в перспективе)
+### Web
 
-Стек уточняется. Ориентир: лёгкий SPA (React или аналог) с минимальными зависимостями.
+| Пакет | Назначение |
+|---|---|
+| `react` + `react-dom` | UI-библиотека (v19) |
+| `vite` | Сборщик и dev-сервер |
+| `typescript` | Типизация |
+| `tailwindcss` | Utility-first стилизация |
+| `@tanstack/react-query` | Кеширование и синхронизация данных с API |
+| `react-router-dom` | Клиентский роутинг |
+
+Каталог: `web/`. Менеджер пакетов: npm. ADR: [adr-004-web-stack.md](adr/adr-004-web-stack.md).
 
 ---
 
@@ -284,6 +294,10 @@ DATABASE_URL=postgresql+asyncpg://user:pass@127.0.0.1:5433/dbname
 | `make db-migrate` | Применить миграции Alembic (`backend/alembic.ini`) |
 | `make db-reset` | Удалить volume БД, поднять заново и применить миграции |
 | `make db-shell` | Интерактивный `psql` в контейнере PostgreSQL |
+| `make web-install` | Установить npm-зависимости `web/` |
+| `make web-dev` | Dev-сервер веб-клиента (Vite, порт 5173) |
+| `make web-build` | Production-сборка в `web/dist/` |
+| `make web-lint` | Lint веб-клиента (eslint) |
 
 ---
 

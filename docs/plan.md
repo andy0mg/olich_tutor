@@ -25,7 +25,7 @@
 | 1 | Фундамент и Telegram-клиент | Рабочий канал: конфиг, LLM, сессии в памяти, диалог с репетитором | ✅ Done | — |
 | 2 | MVP-учебные сценарии в боте | Объяснение, задание/тест, проверка, учёт прогресса (в памяти) | ✅ Done | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
 | 3 | Персистентность и модель данных | Учётки, диалоги, прогресс между перезапусками; миграции | ✅ Done | [docs/tasks/tasklist-database.md](tasks/tasklist-database.md) |
-| 4 | Веб-клиент ученика и родителя | Те же данные через API: занятия, прогресс, активность | 📋 Planned | — |
+| 4 | Веб-клиент ученика и родителя | Те же данные через API: занятия, прогресс, активность | 🚧 In Progress | [docs/tasks/tasklist-web.md](tasks/tasklist-web.md) |
 | 5 | Расширение платформы | Преподаватель, материалы, потоки — по приоритету из [idea.md](idea.md) | 📋 Planned | [docs/tasks/tasklist-backend.md](tasks/tasklist-backend.md) |
 | 6 | Продакшн и сопровождение | Webhook, деплой, наблюдаемость, резервное копирование | 📋 Planned | — |
 

@@ -5,6 +5,7 @@ fastapi>=0.115
 greenlet>=3.0
 openai>=1.70
 pydantic-settings>=2.8
+PyJWT>=2.8
 python-dotenv>=1.1
 ruff>=0.8.0
 sqlalchemy[asyncio]>=2.0

@@ -1,12 +1,12 @@
-"""Текстовые сообщения и команда /start."""
+"""Текстовые сообщения и команды /start, /web, /invite."""
 
 import base64
 import io
 import logging
 
 import httpx
-from aiogram import Router
-from aiogram.filters import CommandStart
+from aiogram import F, Router
+from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
 
 from bot.backend_client import BackendApiClient, ConversationNotFoundError
@@ -38,6 +38,48 @@ def create_messages_router(api: BackendApiClient) -> Router:
         await message.answer(
             "Привет! Я AI-репетитор по математике. Напиши тему или вопрос — "
             "объясню или помогу с задачей.",
+        )
+
+    # In practice some Telegram clients send commands as plain text (or with @botname).
+    # Keep this handler robust so it doesn't fall through to the LLM chat turn.
+    @router.message(Command("web"))
+    @router.message(F.text.regexp(r"^/web(@\\w+)?(\\s|$)"))
+    async def cmd_web(message: Message) -> None:
+        user = message.from_user
+        if not user:
+            return
+        ext_id = str(user.id)
+        try:
+            code = await api.generate_web_code(ext_id)
+        except Exception:
+            logger.exception("cmd_web: generate_web_code failed for user_id=%s", user.id)
+            await message.answer("Не удалось сгенерировать код. Попробуй позже.")
+            return
+        await message.answer(
+            f"Код для входа в веб-приложение:\n\n<b>{code}</b>\n\n"
+            "Код действует 15 минут. Введите его на странице входа.",
+            parse_mode="HTML",
+        )
+
+    @router.message(Command("invite"))
+    @router.message(F.text.regexp(r"^/invite(@\\w+)?(\\s|$)"))
+    async def cmd_invite(message: Message) -> None:
+        user = message.from_user
+        if not user:
+            return
+        ext_id = str(user.id)
+        try:
+            code = await api.generate_invite_code(ext_id)
+        except Exception:
+            logger.exception("cmd_invite: generate_invite_code failed for user_id=%s", user.id)
+            await message.answer("Не удалось создать приглашение. Попробуй позже.")
+            return
+        await message.answer(
+            f"Приглашение для родителя:\n\n"
+            f"Код: <b>{code}</b>\n\n"
+            f"Родитель может перейти по ссылке /invite/{code} "
+            f"или ввести код на странице приглашения.",
+            parse_mode="HTML",
         )
 
     @router.message()

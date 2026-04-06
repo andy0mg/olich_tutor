@@ -79,6 +79,22 @@ class BackendApiClient:
         data = r.json()
         return str(data["assistant_message"]["content"])
 
+    async def generate_web_code(self, external_user_id: str) -> str:
+        """Ask backend to generate a one-time web login code for this user."""
+        url = f"{self._base}{API_V1}/auth/web-code"
+        r = await self._http.post(url, headers=self._headers(external_user_id), json={})
+        self._log_error_if_needed(r, "generate_web_code", url)
+        r.raise_for_status()
+        return str(r.json()["code"])
+
+    async def generate_invite_code(self, external_user_id: str) -> str:
+        """Ask backend to generate a parent invite code."""
+        url = f"{self._base}{API_V1}/auth/invite-code"
+        r = await self._http.post(url, headers=self._headers(external_user_id), json={})
+        self._log_error_if_needed(r, "generate_invite_code", url)
+        r.raise_for_status()
+        return str(r.json()["code"])
+
     def _log_error_if_needed(self, response: httpx.Response, op: str, url: str) -> None:
         if response.is_success:
             return

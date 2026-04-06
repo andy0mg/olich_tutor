@@ -1,4 +1,4 @@
-.PHONY: install run run-backend lint format test check db-up db-down db-reset db-migrate db-shell docker-ready
+.PHONY: install run run-backend lint format test check db-up db-down db-reset db-migrate db-shell docker-ready web-install web-dev web-build web-lint
 
 VENV_PY := .venv/Scripts/python.exe
 UV := uv
@@ -43,3 +43,15 @@ db-migrate:
 
 db-shell: docker-ready
 	docker compose exec postgres psql -U olich -d olich_tutor
+
+web-install:
+	cd web && npm install
+
+web-dev:
+	cd web && npm run dev
+
+web-build:
+	cd web && npm run build
+
+web-lint:
+	cd web && npm run lint
